@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+import os
+import re
+import sys
+
+import requests
+
+URL = 'http://localhost:8888/'
+DIR = os.path.dirname(__file__)
+
+with open(os.path.join(DIR, 'dnsmasq-hook.pass')) as f:
+    username = f.readline().strip()
+    password = f.readline().strip()
+
+
+def main():
+    action = sys.argv[1]
+    # mac = sys.argv[2]
+    ip = sys.argv[3]
+    host = len(sys.argv) > 4 and sys.argv[4]
+
+    if not host or not re.match(r'^[\w-]+$', host):
+        return
+
+    data = {'domain': host, 'address': ip}
+    if action in ('add', 'del'):
+        data['op'] = action
+        requests.post(URL, json=data, auth=(username, password)).raise_for_status()
+
+
+if __name__ == '__main__':
+    main()
