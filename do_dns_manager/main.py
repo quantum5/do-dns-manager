@@ -12,6 +12,7 @@ def main():
     from tornado.options import options, define
 
     define('port', default=8888, help='run on the given port', type=int)
+    define('address', help='address to bind to')
     define('keyfile', default='htpasswd.txt', help='list of username:password lines that authenticates')
     define('domain', help='the DigitalOcean domain to change')
     api_key = os.environ['DIGITAL_OCEAN_API_KEY']
@@ -19,7 +20,7 @@ def main():
     tornado.options.parse_command_line()
     tornado.httpserver.HTTPServer(
         get_application(api_key, load_htpasswd(options.keyfile), options.domain)
-    ).listen(options.port)
+    ).listen(options.port, address=options.address)
     tornado.ioloop.IOLoop.current().start()
 
 
