@@ -17,7 +17,10 @@ class DNSUpdateHandler(BasicAuthMixin, web.RequestHandler):
         self.domain = domain
 
     def prepare(self):
-        self.get_authenticated_user(check_credentials_func=self.pw_dict.get, realm='Protected')
+        self.authed = False
+        if self.request.method.lower() == 'post':
+            if self.get_authenticated_user(check_credentials_func=self.pw_dict.get, realm='Protected'):
+                self.authed = True
 
     @gen.coroutine
     def get(self):
@@ -25,6 +28,10 @@ class DNSUpdateHandler(BasicAuthMixin, web.RequestHandler):
 
     @gen.coroutine
     def post(self):
+        if not self.authed:
+            self.set_status(403)
+            raise web.Finish('Forbidden')
+
         try:
             data = escape.json_decode(self.request.body)
         except ValueError:
