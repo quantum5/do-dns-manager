@@ -104,6 +104,7 @@ class DNSUpdateHandler(BasicAuthMixin, web.RequestHandler):
                    if record['name'] == domain and record['type'] == type]
 
         if not add:
+            log.info('Removed %s record: %s', type, domain)
             return (yield self._do_remove_entries(records))
 
         new = {'type': type, 'data': str(ip), 'name': domain}
@@ -125,6 +126,7 @@ class DNSUpdateHandler(BasicAuthMixin, web.RequestHandler):
                 log.exception('Error while creating %s record %s to %s', type, domain, ip)
                 return False
 
+        log.info('Added %s record %s to %s', type, domain, ip)
         return True
 
     @gen.coroutine
