@@ -107,7 +107,7 @@ class DNSUpdateHandler(BasicAuthMixin, web.RequestHandler):
             log.info('Removed %s record: %s', type, domain)
             return (yield self._do_remove_entries(records))
 
-        new = {'type': type, 'data': str(ip), 'name': domain}
+        new = {'type': type, 'data': str(ip), 'name': domain, 'ttl': 0}
 
         if records:
             change = records.pop()
