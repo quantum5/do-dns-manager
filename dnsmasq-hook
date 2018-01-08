@@ -23,9 +23,11 @@ def main():
         return
 
     data = {'domain': host, 'address': ip}
-    if action in ('add', 'del'):
-        data['op'] = action
-        requests.post(URL, json=data, auth=(username, password)).raise_for_status()
+    if action not in ('add', 'del', 'old'):
+        raise SystemExit('Invalid action: %s' % (action,))
+
+    data['op'] = {'old': 'add'}.get(action, action)
+    requests.post(URL, json=data, auth=(username, password)).raise_for_status()
 
 
 if __name__ == '__main__':
