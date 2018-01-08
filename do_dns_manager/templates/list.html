@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DNS Record List for {{ domain }}</title>
+</head>
+<body>
+
+<table>
+    <thead>
+    <tr>
+        <th>Domain</th>
+        <th>Type</th>
+        <th>Target</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for record in records %}
+        {% if record['type'] not in ('A', 'AAAA') or record['name'] == '@' %}
+            {% continue %}
+        {% end %}
+        <tr>
+            <td>{{ record['name'] }}.{{ domain }}</td>
+            <td>{{ record['type'] }}</td>
+            <td>{{ record['data'] }}</td>
+        </tr>
+    {% end %}
+    </tbody>
+</table>
+
+</body>
+</html>
