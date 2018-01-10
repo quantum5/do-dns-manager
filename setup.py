@@ -1,4 +1,8 @@
+import os
 from setuptools import setup
+
+with open(os.path.join(os.path.dirname(__file__), 'README.rst'), encoding='utf-8') as f:
+    readme = f.read()
 
 setup(
     name='do-dns-manager',
@@ -17,6 +21,7 @@ setup(
     url='https://github.com/quantum5/do-dns-manager',
     description='A DNS record manager using DigitalOcean as backend, '
                 'useful for assigning DNS records in a DHCP hook.',
+    long_description=readme,
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
