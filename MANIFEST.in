@@ -1,0 +1,4 @@
+include do_dns_manager/templates/*.html
+include dnsmasq-hook
+include LICENSE
+include README.rst

@@ -4,7 +4,7 @@ setup(
     name='do-dns-manager',
     version='0.1',
     packages=['do_dns_manager'],
-    package_data={'': '*.html'},
+    package_data={'do_dns_manager': ['templates/*.html']},
     entry_points={
         'console_scripts': [
             'do-dns-manager = do_dns_manager:main',
