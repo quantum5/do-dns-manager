@@ -2,6 +2,7 @@ import ipaddress
 import logging
 import os
 import re
+from urllib.parse import urljoin
 
 from tornado import gen, escape, web, httpclient
 from tornado_http_auth import BasicAuthMixin
@@ -84,7 +85,7 @@ class DNSUpdateHandler(BasicAuthMixin, web.RequestHandler):
             headers['Content-Type'] = 'application/json'
 
         result = yield httpclient.AsyncHTTPClient().fetch(
-            'https://api.digitalocean.com/v2/' + path,
+            urljoin('https://api.digitalocean.com/v2/', path),
             headers=headers,
             **kwargs,
         )
@@ -94,8 +95,12 @@ class DNSUpdateHandler(BasicAuthMixin, web.RequestHandler):
 
     @gen.coroutine
     def _do_get_domains(self):
-        result = yield self._do_api('domains/%s/records' % (self.domain,))
-        return result['domain_records']
+        result = {'links': {'pages': {'next': 'domains/%s/records' % (self.domain,)}}}
+        output = []
+        while 'next' in result['links'].get('pages', {}):
+            result = yield self._do_api(result['links']['pages']['next'])
+            output += result['domain_records']
+        return output
 
     @gen.coroutine
     def _do_edit_dns(self, domain, ip, add):
@@ -107,7 +112,7 @@ class DNSUpdateHandler(BasicAuthMixin, web.RequestHandler):
             log.info('Removed %s record: %s', type, domain)
             return (yield self._do_remove_entries(records))
 
-        new = {'type': type, 'data': str(ip), 'name': domain, 'ttl': 0}
+        new = {'type': type, 'data': str(ip), 'name': domain, 'ttl': 30}
 
         if records:
             change = records.pop()
